@@ -15,7 +15,9 @@ export default {
     return {
       dataModel: {},
       objs: {},
-      g3d: {}
+      g3d: {},
+      booming: false,
+      isAnimating: false
     };
   },
   methods: {
@@ -71,74 +73,69 @@ export default {
         }
       });
 
-      view = g3d.getView();
-      // view.addEventListener(
-      //   type,
-      //   function(e) {
-      //     if (
-      //       isAnimating ||
-      //       e.target === select ||
-      //       !ht.Default.isLeftButton(e)
-      //     ) {
-      //       return;
-      //     }
-      //     e.preventDefault();
-      //     isAnimating = true;
-      //     var data = graphView.getDataAt(e);
-      //     var easing = Easing[select.value];
-      //     var finishFunc = function() {
-      //       isAnimating = false;
-      //     };
-      //     if (data === toy) {
-      //       var size = toy.getSize();
-      //       ht.Default.startAnim({
-      //         frames: 30,
-      //         interval: 16,
-      //         easing: easing,
-      //         finishFunc: finishFunc,
-      //         action: function(v) {
-      //           toy.setRotation(Math.PI * v);
-      //           var r = Math.abs(v - 0.5) * 2;
-      //           toy.setSize(size.width * r, size.height * r);
-      //         }
-      //       });
-      //     } else {
-      //       var p2 = graphView.getLogicalPoint(e);
-      //       var p1 = toy.getPosition();
-      //       anim = ht.Default.startAnim({
-      //         duration: 500,
-      //         easing: easing,
-      //         finishFunc: finishFunc,
-      //         action: function(v) {
-      //           toy.setPosition(
-      //             p1.x + (p2.x - p1.x) * v,
-      //             p1.y + (p2.y - p1.y) * v
-      //           );
-      //         }
-      //       });
-      //     }
-      //   },
-      //   false
-      // );
+      let graphView = this.g3d.getView();
+      graphView.addEventListener(
+        "dblclick",
+        e => {
+          if (this.isAnimating || !ht.Default.isLeftButton(e)) {
+            return;
+          }
+          e.preventDefault();
+          this.isAnimating = true;
+          console.log(">>> this.booming triggerBoom:", this.booming);
+          this.triggerBoom();
+        },
+        false
+      );
+      graphView.addEventListener(
+        "tap",
+        e => {
+          if (this.isAnimating || !ht.Default.isLeftButton(e)) {
+            return;
+          }
+          e.preventDefault();
+          this.isAnimating = true;
+          console.log(">>> this.booming triggerBoom:", this.booming);
+          this.triggerBoom();
+        },
+        false
+      );
+      graphView.addEventListener(
+        "contextmenu",
+        e => {
+          e.preventDefault();
+          alert("您点击了节点，具体节点信息暂时尚未发布。");
+        },
+        false
+      );
+    },
+    triggerRightClick(event) {
+      alert("click node...");
     },
     triggerBoom() {
       // 第一个OBJ和第三个OBJ弹出，展示爆炸效果
       let obj1 = this.objs["gem003"],
         obj2 = this.objs["gem002"];
       ht.Default.startAnim({
-        frames: 16, // 动画帧数
-        interval: 10, // 动画帧间隔毫秒数
+        frames: 12, // 动画帧数
+        interval: 5, // 动画帧间隔毫秒数
         easing: t => {
           return t * t;
         }, // 动画缓动函数，默认采用`ht.Default.animEasing`
         finishFunc: () => {
-          this.initTask();
+          this.booming = !this.booming;
+          this.isAnimating = false;
         }, // 动画结束后调用的函数。
         action: v => {
           var p1 = obj1.getPosition();
           var p2 = obj2.getPosition();
-          obj1.p3(p1.x, p1.y + 55 * v, 0);
-          obj2.p3(p2.x, p2.y - 55 * v, 0);
+          if (!this.booming) {
+            obj1.p3(p1.x, p1.y + 55 * v, 0);
+            obj2.p3(p2.x, p2.y - 55 * v, 0);
+          } else {
+            obj1.p3(p1.x, 0, 0);
+            obj2.p3(p2.x, 0, 0);
+          }
         }
       });
     },
