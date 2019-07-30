@@ -26,9 +26,9 @@ export default {
         "http://www.cnlaunch.com"
       ],
       defaultImages: [
-        "/image/pix02.jpg",
-        "/image/pix03.jpg",
-        "/image/pix01.jpg"
+        "./image/pix02.jpg",
+        "./image/pix03.jpg",
+        "./image/pix01.jpg"
       ],
       isAnimating: false
     };
