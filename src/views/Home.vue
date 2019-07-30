@@ -111,7 +111,8 @@ export default {
         this.dataModel = dataModel;
         this.g3d = g3d;
 
-        this.initEvents();
+        this.triggerBoom();
+        this.g3dMi();
       });
     },
     triggerBoom() {
@@ -127,6 +128,7 @@ export default {
         finishFunc: () => {
           this.booming = !this.booming;
           this.isAnimating = false;
+          this.initTask();
         }, // 动画结束后调用的函数。
         action: v => {
           var p1 = obj1.getPosition();
@@ -141,21 +143,7 @@ export default {
         }
       });
     },
-    initEvents() {
-      let g3dView = this.g3d.getView();
-      g3dView.addEventListener(
-        "dblclick",
-        e => {
-          if (this.isAnimating || !ht.Default.isLeftButton(e)) {
-            return;
-          }
-          e.preventDefault();
-          this.isAnimating = true;
-          this.triggerBoom();
-        },
-        false
-      );
-
+    g3dMi() {
       this.g3d.mi(e => {
         console.log("e.kind", e.kind);
         if (e.kind === "clickData") {
@@ -179,6 +167,22 @@ export default {
           }
         }
       });
+    },
+    initEvents() {
+      let g3dView = this.g3d.getView();
+      g3dView.addEventListener(
+        "dblclick",
+        e => {
+          if (this.isAnimating || !ht.Default.isLeftButton(e)) {
+            return;
+          }
+          e.preventDefault();
+          this.isAnimating = true;
+          this.triggerBoom();
+        },
+        false
+      );
+      this.g3dMi();
     },
     initTask() {
       let rotationTask = {
