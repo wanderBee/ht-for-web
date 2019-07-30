@@ -21,14 +21,14 @@ export default {
   methods: {
     initHT() {
       this.initDataModel();
-      // this.initTask();
     },
-    showgem(type) {
+    showgem(type, color) {
       var node = new ht.Node();
       node.s({
         shape3d: type,
         "wf.visible": "selected",
-        "3d.selectable": false
+        "3d.selectable": false,
+        "shape3d.color": color
       });
 
       this.dataModel.add(node);
@@ -39,7 +39,8 @@ export default {
       let g3d = new ht.graph3d.Graph3dView(dataModel);
       g3d.setEye(-200, 350, 350);
       g3d.setDashDisabled(false);
-      g3d.getView().style.background = "#c2c2c2";
+      // g3d.setCenterAxisVisible(true);  // 展示坐标轴
+      g3d.getView().style.background = "#000";
       g3d.addToDOM();
       this.dataModel = dataModel;
       this.g3d = g3d;
@@ -50,76 +51,35 @@ export default {
         center: false,
         shape3d: "gem003",
         s3: [0.04, 0.04, 0.04], // make gem smaller
-        finishFunc: (modelMap, array, rawS3) => {
-          this.showgem("gem003", rawS3);
+        finishFunc: () => {
+          this.showgem("gem003", "#2D8EFF");
+          if (Object.keys(this.objs).length === 3) {
+            this.triggerBoom();
+          }
         }
       });
       ht.Default.loadObj("3dobj/001.obj", null, {
         center: false,
         shape3d: "gem001",
         s3: [0.04, 0.04, 0.04], // make gem smaller
-        finishFunc: (modelMap, array, rawS3) => {
-          this.showgem("gem001", rawS3);
+        finishFunc: () => {
+          this.showgem("gem001", "#36C626");
+          if (Object.keys(this.objs).length === 3) {
+            this.triggerBoom();
+          }
         }
       });
       ht.Default.loadObj("3dobj/002.obj", null, {
         center: false,
         shape3d: "gem002",
         s3: [0.04, 0.04, 0.04], // make gem smaller
-        finishFunc: (modelMap, array, rawS3) => {
-          this.showgem("gem002", rawS3);
+        finishFunc: () => {
+          this.showgem("gem002", "#F5222D");
+          if (Object.keys(this.objs).length === 3) {
+            this.triggerBoom();
+          }
         }
       });
-
-      view = g3d.getView();
-      // view.addEventListener(
-      //   type,
-      //   function(e) {
-      //     if (
-      //       isAnimating ||
-      //       e.target === select ||
-      //       !ht.Default.isLeftButton(e)
-      //     ) {
-      //       return;
-      //     }
-      //     e.preventDefault();
-      //     isAnimating = true;
-      //     var data = graphView.getDataAt(e);
-      //     var easing = Easing[select.value];
-      //     var finishFunc = function() {
-      //       isAnimating = false;
-      //     };
-      //     if (data === toy) {
-      //       var size = toy.getSize();
-      //       ht.Default.startAnim({
-      //         frames: 30,
-      //         interval: 16,
-      //         easing: easing,
-      //         finishFunc: finishFunc,
-      //         action: function(v) {
-      //           toy.setRotation(Math.PI * v);
-      //           var r = Math.abs(v - 0.5) * 2;
-      //           toy.setSize(size.width * r, size.height * r);
-      //         }
-      //       });
-      //     } else {
-      //       var p2 = graphView.getLogicalPoint(e);
-      //       var p1 = toy.getPosition();
-      //       anim = ht.Default.startAnim({
-      //         duration: 500,
-      //         easing: easing,
-      //         finishFunc: finishFunc,
-      //         action: function(v) {
-      //           toy.setPosition(
-      //             p1.x + (p2.x - p1.x) * v,
-      //             p1.y + (p2.y - p1.y) * v
-      //           );
-      //         }
-      //       });
-      //     }
-      //   },
-      //   false
-      // );
     },
     triggerBoom() {
       // 第一个OBJ和第三个OBJ弹出，展示爆炸效果
